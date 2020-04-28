@@ -13,11 +13,13 @@ table, td, th {
 }
 
 table {
+    display: block;
     border-collapse: collapse;
     width: 100%;
 }
 
 th {
+    text-align: Center;
     height: 30px;
 }
 
