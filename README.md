@@ -2,6 +2,8 @@
 
 Simple tasklist made with [Flask framework](https://flask.palletsprojects.com/en/1.1.x/) from python.
 
+![Overview](imgs/overview.png)
+
 ## Fire up the app on localhost
 
 The application was built to work on development too, that means you will need to set the environment variables, such as:
