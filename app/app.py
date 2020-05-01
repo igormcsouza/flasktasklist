@@ -1,12 +1,30 @@
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
+from flask.cli import FlaskGroup
 from datetime import datetime
+import os
 
+def configuring_database(app=None):
+    engine = 'postgres://%s:%s@%s:%s/%s' % (
+        os.environ['POSTGRES_USER'], 
+        os.environ['POSTGRES_PASSWORD'], 
+        'db', '5432',
+        os.environ['POSTGRES_DB']
+    )
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = engine
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    return SQLAlchemy(app)
+
+# Initializing app and configuring it
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasklist.db'
-db = SQLAlchemy(app)
+cli = FlaskGroup(app)
+db = configuring_database(app)
 
+# Defining the project model
 class Todo(db.Model):
+    __tablename__ = "todo"
+
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(200), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
@@ -15,6 +33,7 @@ class Todo(db.Model):
     def __repr__(self):
         return '<Task %r>' % self.id
 
+# Main route of the project
 @app.route('/', methods=['POST', 'GET'])
 def index():
     if request.method == 'POST':
@@ -22,7 +41,6 @@ def index():
         task_completed = request.form['completed']
 
         new_task = Todo(content=task_content, date_completed=task_completed)
-
         try:
             db.session.add(new_task)
             db.session.commit()
@@ -60,8 +78,13 @@ def update(id):
     else:
         return render_template('update.html', task=task)
 
-def get_app():
-    return app
 
-if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0')
+# Migrating Database
+def create_db():
+    db.drop_all()
+    db.create_all()
+    db.session.commit()
+    print('Created database!')
+
+# if __name__ == "__main__":
+#     app.run(debug=True, host='0.0.0.0')
