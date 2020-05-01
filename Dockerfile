@@ -5,6 +5,6 @@ RUN pip install -r /opt/requirements.txt
 
 WORKDIR /flasktasklist
 
-COPY app /flasktasklist/app
+COPY app /flasktasklist/
 
-ENTRYPOINT ["python3", "app/app.py"]
+CMD gunicorn -b 0.0.0.0:8000 --access-logfile - "app:app"
