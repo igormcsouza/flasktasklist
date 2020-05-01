@@ -8,7 +8,8 @@ def configuring_database(app=None):
     engine = 'postgres://%s:%s@%s:%s/%s' % (
         os.environ['POSTGRES_USER'], 
         os.environ['POSTGRES_PASSWORD'], 
-        'db', '5432',
+        os.environ['POSTGRES_TYPE'], 
+        os.environ['POSTGRES_PORT'],
         os.environ['POSTGRES_DB']
     )
 
